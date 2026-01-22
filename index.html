@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grimorio de Alex - Minecraft</title>
+    <meta name="description" content="Guía de comandos mágicos para Alex">
+    <meta name="theme-color" content="#0d0d0d">
+    
+    <!-- FUENTE: Nunito (Redondeada y amigable para niños) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- ICONOS: RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        /* --- 1. VARIABLES Y BASE --- */
+        :root {
+            --bg-body: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #252525;
+            --green-creeper: #00E676; /* Verde */
+            --purple-magic: #D500F9;  /* Magia */
+            --blue-diamond: #00B0FF;  /* Diamante */
+            --red-danger: #FF5252;    /* Peligro */
+            --text-main: #ffffff;
+            --text-muted: #a1a1a1;
+            --radius: 20px;
+            --shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Nunito', sans-serif;
+            padding-bottom: 120px; /* Espacio para el botón de descarga */
+            overflow-x: hidden;
+        }
+
+        /* --- 2. HEADER Y SALUDO --- */
+        header {
+            padding: 30px 20px 10px 20px;
+            background: radial-gradient(circle at top right, rgba(0,230,118,0.15), transparent 40%);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: 3px solid var(--green-creeper);
+            box-shadow: 0 0 15px rgba(0,230,118,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .titles h3 { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .titles h1 { font-size: 1.8rem; font-weight: 900; line-height: 1.1; }
+        .highlight { color: var(--green-creeper); }
+
+        .intro-text { padding: 10px 20px; font-size: 0.95rem; color: var(--text-muted); }
+
+        /* --- 3. FILTROS DE CATEGORÍA --- */
+        .filter-scroller {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 20px 20px 20px;
+            scrollbar-width: none;
+        }
+        .filter-scroller::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid #333;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active {
+            background: var(--green-creeper);
+            color: #000;
+            border-color: var(--green-creeper);
+            box-shadow: 0 4px 12px rgba(0,230,118,0.3);
+            transform: scale(1.05);
+        }
+
+        /* --- 4. GRID DE TARJETAS --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Móvil: 1 columna */
+            gap: 15px;
+            padding: 0 20px;
+        }
+
+        @media (min-width: 600px) {
+            .cards-grid { grid-template-columns: 1fr 1fr; } /* Tablet: 2 columnas */
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.2s, background 0.2s;
+            /* Para la animación de filtrado */
+            display: flex; 
+            flex-direction: column;
+        }
+
+        .card:active { transform: scale(0.98); background: var(--bg-card-hover); }
+        .card[style*="display: none"] { display: none !important; }
+
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        
+        .icon-box {
+            width: 45px; height: 45px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .card-title { font-weight: 800; font-size: 1.1rem; }
+        .card-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; flex-grow: 1; line-height: 1.4; }
+
+        /* Colores por tipo */
+        .type-magic .icon-box { color: var(--purple-magic); background: rgba(213,0,249,0.1); }
+        .type-world .icon-box { color: var(--green-creeper); background: rgba(0,230,118,0.1); }
+        .type-item .icon-box { color: var(--blue-diamond); background: rgba(0,176,255,0.1); }
+        .type-fun .icon-box { color: gold; background: rgba(255,215,0,0.1); }
+
+        /* CAJA DE CÓDIGO */
+        .code-box {
+            background: #000;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            color: var(--green-creeper);
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-left: 3px solid var(--green-creeper);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-box span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .copy-hint {
+            font-size: 0.7rem;
+            background: #333;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* --- 5. NOTIFICACIÓN Y BOTÓN FLOTANTE --- */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #333;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+        }
+        #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .fab-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, #0d0d0d 80%, transparent);
+            z-index: 900;
+            display: flex;
+            justify-content: center;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
+            color: #000;
+            text-decoration: none;
+            width: 100%;
+            max-width: 500px;
+            padding: 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+        }
+
+        .download-btn:active { transform: scale(0.96); }
+        .pulse-ring { animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- NOTIFICACIÓN (TOAST) -->
+    <div id="toast"><i class="ri-checkbox-circle-fill" style="color: var(--green-creeper);"></i> ¡Copiado! Listo para pegar</div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+            <div class="avatar">👨‍🚀</div>
+            <div class="titles">
+                <h3>Hola Alex</h3>
+                <h1>Tu Libro <br><span class="highlight">Mágico</span> 📖</h1>
+            </div>
+        </div>
+    </header>
+
+    <p class="intro-text">Toca un comando para copiarlo y pégalo en el chat (tecla T o /). ¡A jugar! 🎮</p>
+
+    <!-- FILTROS -->
+    <nav class="filter-scroller">
+        <button class="filter-btn active" onclick="filterSelection('all', this)">🌈 Todos</button>
+        <button class="filter-btn" onclick="filterSelection('world', this)">🌍 Mundo</button>
+        <button class="filter-btn" onclick="filterSelection('magic', this)">✨ Magia</button>
+        <button class="filter-btn" onclick="filterSelection('fun', this)">🎉 Diversión</button>
+    </nav>
+
+    <!-- GRID DE TARJETAS -->
+    <main class="cards-grid" id="cardContainer">
+
+        <!-- CATEGORÍA: MUNDO (Clima, Tiempo) -->
+        <div class="card type-world" data-cat="world">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-sun-fill"></i></div>
+                <div class="card-title">Siempre de Día</div>
+            </div>
+            <p class="card-desc">¡Adiós oscuridad! Perfecto para construir sin que molesten los zombis.</p>
+            <div class="code-box" onclick="copyText('/alwaysday')">
+                <span>/alwaysday</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-world" data-cat="world">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-cloud-off-fill"></i></div>
+                <div class="card-title">Cielo Despejado</div>
+            </div>
+            <p class="card-desc">Quita la lluvia molesta y deja que salga el sol.</p>
+            <div class="code-box" onclick="copyText('/weather clear')">
+                <span>/weather clear</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-world" data-cat="world">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-moon-clear-fill"></i></div>
+                <div class="card-title">Hacer de Noche</div>
+            </div>
+            <p class="card-desc">¿Quieres probar tu espada contra monstruos? ¡Apaga las luces!</p>
+            <div class="code-box" onclick="copyText('/time set night')">
+                <span>/time set night</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <!-- CATEGORÍA: MAGIA (Gamemode, Give, Enchant) -->
+        <div class="card type-magic" data-cat="magic">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-pencil-ruler-2-fill"></i></div>
+                <div class="card-title">Modo Creativo</div>
+            </div>
+            <p class="card-desc">Vuela, rompe bloques al instante y sé invencible.</p>
+            <div class="code-box" onclick="copyText('/gamemode creative')">
+                <span>/gamemode creative</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-magic" data-cat="magic">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-sword-fill"></i></div>
+                <div class="card-title">Modo Aventura</div>
+            </div>
+            <p class="card-desc">Vuelve a tener corazones y hambre. ¡A sobrevivir!</p>
+            <div class="code-box" onclick="copyText('/gamemode survival')">
+                <span>/gamemode survival</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-item" data-cat="magic">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-vip-diamond-fill"></i></div>
+                <div class="card-title">Diamantes Gratis</div>
+            </div>
+            <p class="card-desc">Consigue 64 diamantes brillantes al instante.</p>
+            <div class="code-box" onclick="copyText('/give @p diamond 64')">
+                <span>/give @p diamond 64</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+        
+        <div class="card type-magic" data-cat="magic">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-magic-fill"></i></div>
+                <div class="card-title">Espada Súper Poderosa</div>
+            </div>
+            <p class="card-desc">Encanta lo que tengas en la mano con mucho filo.</p>
+            <div class="code-box" onclick="copyText('/enchant @p sharpness 5')">
+                <span>/enchant @p sharpness 5</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-magic" data-cat="magic">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-terminal-box-fill"></i></div>
+                <div class="card-title">Bloque de Comandos</div>
+            </div>
+            <p class="card-desc">El bloque secreto para programar trucos automáticos.</p>
+            <div class="code-box" onclick="copyText('/give @p command_block')">
+                <span>/give @p command_block</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <!-- CATEGORÍA: DIVERSIÓN (Summon, TP, Fun) -->
+        <div class="card type-fun" data-cat="fun">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-aliens-fill"></i></div>
+                <div class="card-title">Invocar Creeper</div>
+            </div>
+            <p class="card-desc">¡Cuidado! Aparecerá un creeper justo donde estás.</p>
+            <div class="code-box" onclick="copyText('/summon creeper')">
+                <span>/summon creeper</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-fun" data-cat="fun">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-rocket-2-fill"></i></div>
+                <div class="card-title">Teletransportación</div>
+            </div>
+            <p class="card-desc">Viaja mágicamente a las coordenadas 100, 70, 100.</p>
+            <div class="code-box" onclick="copyText('/tp @p 100 70 100')">
+                <span>/tp @p 100 70 100</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-fun" data-cat="fun">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-map-pin-user-fill"></i></div>
+                <div class="card-title">¿Dónde hay una Villa?</div>
+            </div>
+            <p class="card-desc">El juego te dirá las coordenadas de la aldea más cercana.</p>
+            <div class="code-box" onclick="copyText('/locate structure village')">
+                <span>/locate structure village</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+        <div class="card type-fun" data-cat="fun">
+            <div class="card-header">
+                <div class="icon-box"><i class="ri-chat-4-fill"></i></div>
+                <div class="card-title">Mensaje Global</div>
+            </div>
+            <p class="card-desc">Habla con todos los jugadores a la vez.</p>
+            <div class="code-box" onclick="copyText('/say ¡Hola Alex!')">
+                <span>/say ¡Hola Alex!</span><div class="copy-hint">COPIAR</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTÓN DE DESCARGA -->
+    <div class="fab-wrapper">
+        <a href="https://drive.google.com/file/d/1_rAp5x9c4oldPREtCYChqKMsadiIiZjI/view?usp=drivesdk" class="download-btn pulse-ring" target="_blank">
+            <i class="ri-download-cloud-2-fill"></i> Descargar App
+        </a>
+    </div>
+
+    <script>
+        // 1. FUNCIÓN DE COPIADO AL PORTAPAPELES
+        function copyText(text) {
+            // Intentar copiar usando la API moderna
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+                vibrate();
+            }).catch(err => {
+                // Fallback por si acaso falla (aunque raro en móviles modernos)
+                console.error('Error al copiar', err);
+                alert("Ups, no pude copiarlo automáticamente. ¡Intenta escribirlo!");
+            });
+        }
+
+        // 2. MOSTRAR NOTIFICACIÓN FLOTANTE
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('visible');
+            
+            // Ocultar después de 2.5 segundos
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 2500);
+        }
+
+        // 3. VIBRACIÓN TÁCTIL (Haptic Feedback)
+        function vibrate() {
+            // Solo funciona en dispositivos Android compatibles
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // 4. SISTEMA DE FILTRADO
+        function filterSelection(category, btnElement) {
+            // A. Actualizar botón activo
+            const buttons = document.getElementsByClassName('filter-btn');
+            for (let btn of buttons) {
+                btn.classList.remove('active');
+            }
+            btnElement.classList.add('active');
+            
+            // B. Filtrar tarjetas
+            const cards = document.getElementsByClassName('card');
+            
+            for (let card of cards) {
+                // Si la categoría es 'all', mostramos todo. Si no, miramos el data-cat
+                if (category === 'all') {
+                    card.style.display = 'flex';
+                    // Pequeña animación de entrada al resetear
+                    card.style.animation = 'fadeIn 0.5s';
+                } else {
+                    if (card.getAttribute('data-cat') === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            }
+            
+            vibrate(); // Feedback al pulsar filtro
+        }
+
+        // Animación CSS simple inyectada para el filtrado
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+    </script>
+</body>
+</html>
